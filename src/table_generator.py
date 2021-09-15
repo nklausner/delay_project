@@ -6,6 +6,7 @@ import os
 import pandas as pd
 import numpy as np
 from ast import literal_eval
+from sys import argv
 
 
 def read_data(my_file_list, my_date_list):
@@ -44,47 +45,55 @@ def create_route_dictionary(mydata):
     return mydict
 
 
-train_id = 'EC_8'
-file_list = os.listdir(os.path.join('data', train_id))
-file_list.sort()
-summary = file_list.pop(-1)
-date_start = os.path.splitext(file_list[0])[0]
-date_final = os.path.splitext(file_list[-1])[0]
-datetime_index = pd.date_range(date_start, date_final, freq="D")
+def create_dataframe(mydata, mydates, myroute):
+    """creates numpy array of needed dimension and fills it, returns dataframe"""
+    print('creating array')
+    w = len(myroute)
+    h = len(mydates)
+    myarray = np.full(shape=(h, w), fill_value=np.nan)
+    for y in range(h):
+        for s in mydata[y]:
+            if isinstance(s, dict) and s['bhf'] in myroute:
+                x = myroute.index(s['bhf'])
+                ad = -1
+                dd = -1
+                if s['adelay']:
+                    ad = int(s['adelay'])
+                if s['ddelay']:
+                    dd = int(s['ddelay'])
+                if max(ad, dd) >= 0:
+                    myarray[y][x] = max(ad, dd)
+    return pd.DataFrame(data=myarray, index=mydates, columns=myroute)
 
 
-data = read_data(file_list, datetime_index)
-route_dict = create_route_dictionary(data)
-main_route = max(route_dict, key=route_dict.get)
-main_route = main_route.split('_')
-print(main_route)
+if __name__ == '__main__':
+    train_id = 'EC_8'
+    try:
+        train_id = argv[1]
+    except:
+        pass
 
+    # preparing files and dates
+    file_list = os.listdir(os.path.join('data', train_id))
+    file_list.sort()
+    summary = file_list.pop(-1)
+    date_start = os.path.splitext(file_list[0])[0]
+    date_final = os.path.splitext(file_list[-1])[0]
+    datetime_index = pd.date_range(date_start, date_final, freq="D")
 
-width = 2 * len(main_route)
-height = len(datetime_index)
-my_array = np.full(shape=(height, width), fill_value=np.nan)
+    # find the main route
+    data = read_data(file_list, datetime_index)
+    route_dict = create_route_dictionary(data)
+    main_route = max(route_dict, key=route_dict.get)
+    main_route_count = route_dict[main_route]
+    main_route = main_route.split('_')
+    print(main_route_count)
+    print(main_route)
 
-
-print('filling array')
-for y in range(height):
-    for s in data[y]:
-        if isinstance(s, dict) and s['bhf'] in main_route:
-            x = 2 * main_route.index(s['bhf'])
-            ad = int(s['adelay'])
-            if ad >= 0:
-                my_array[y][x] = ad
-            dd = int(s['ddelay'])
-            if dd >= 0:
-                my_array[y][x+1] = dd
-
-column_names = []
-for station in main_route:
-    column_names.append(station + '_ad')
-    column_names.append(station + '_dd')
-
-
-df = pd.DataFrame(data=my_array, index=datetime_index, columns=column_names)
-df.to_csv(f'data/{train_id}_delay.csv')
-print(f'saved to data/{train_id}_delay.csv')
-#print(df)
+    # save dataframe as csv
+    df = create_dataframe(data, datetime_index, main_route)
+    df.index.name = 'date'
+    df.to_csv(f'data/trains/{train_id}_delay.csv')
+    print(f'saved to data/trains/{train_id}_delay.csv')
+    #print(df)
 
