@@ -6,7 +6,7 @@ import os
 import pandas as pd
 import numpy as np
 from ast import literal_eval
-from sys import argv
+from sys import argv, exit
 
 
 def read_data(my_file_list, my_date_list):
@@ -67,14 +67,21 @@ def create_dataframe(mydata, mydates, myroute):
 
 
 if __name__ == '__main__':
-    train_id = 'EC_8'
+    train_id = ''
     try:
         train_id = argv[1]
     except:
-        pass
+        print('specify train id')
+        exit(1)
 
+    file_list = []
+    try:
+        file_list = os.listdir(os.path.join('data', train_id))
+    except:
+        print(f'no such directory: data/{train_id}')
+        exit(1)
+    
     # preparing files and dates
-    file_list = os.listdir(os.path.join('data', train_id))
     file_list.sort()
     summary = file_list.pop(-1)
     date_start = os.path.splitext(file_list[0])[0]
