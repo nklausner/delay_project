@@ -1046,7 +1046,7 @@
   "177": {
     "lat": 51.678407800000002,
     "lon": 7.8078311999999999,
-    "name": "Hamm(Westf)",
+    "name": "Hamm(Westf)Hbf",
     "id": 177
   },
   "178": {
@@ -1316,7 +1316,7 @@
   "222": {
     "lat": 51.868046300000003,
     "lon": 12.662437199999999,
-    "name": "Lutherstadt Wittenberg",
+    "name": "Lutherstadt Wittenberg Hbf",
     "id": 222
   },
   "223": {
@@ -3904,6 +3904,18 @@
     "lon": 0.0,
     "name": "Graben-Neudorf",
     "id": 658
+  },
+  "659": {
+    "lat": 48.185,
+    "lon": 16.378,
+    "name": "Wien Hbf",
+    "id": 659
+  },
+  "660": {
+    "lat": 50.053,
+    "lon": 8.570,
+    "name": "Frankfurt(M) Flughafen Fernbf",
+    "id": 660
   },
   "cities": {
     "1": {
