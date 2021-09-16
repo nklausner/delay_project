@@ -79,7 +79,7 @@ def click_bot_popup(mybrowser, mytrain):
     sleep(2.0)
     mybrowser.get(url_train)
     sleep(2.0)
-    my_tr = mybrowser.find_element_by_id("2021-09-14")
+    my_tr = mybrowser.find_element_by_id("2021-09-15")
     my_tr.find_element_by_tag_name("td").click()
     sleep(1.0)
     mybrowser.find_element_by_link_text("Bitte bestätige, dass du ein Mensch bist!").click()
